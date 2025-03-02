@@ -62,7 +62,7 @@ namespace EmployeeManagement.Controllers
         public async Task<ActionResult<Employee>> CreateEmployee(Employee employee)
         {
             await _employeeRepository.AddEmployeeAsync(employee);
-            return Created();
+            return CreatedAtAction(nameof(GetEmployeeByIdAsync), new {id = employee.Id}, employee);
         }
     }
 }
