@@ -45,6 +45,8 @@ namespace EmployeeManagement
                 });
             }
 
+            app.UseHttpsRedirection();
+
             app.UseCors("My cors");
 
             app.MapControllers();

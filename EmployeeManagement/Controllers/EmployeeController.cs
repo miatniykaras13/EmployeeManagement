@@ -20,28 +20,21 @@ namespace EmployeeManagement.Controllers
 
         
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetAllEmployeesAsync()
+        public async Task<ActionResult<IEnumerable<Employee>>> GetAllEmployees()
         {
             var employees = await _employeeRepository.GetAllAsync();
             return Ok(employees);
         }
 
-        [HttpDelete]
-        public async Task<ActionResult<Employee>> DeleteEmployeeAsync(int id)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteEmployeeById(int id)
         {
-            try
-            {
-                await _employeeRepository.DeleteEmployeeAsync(id);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            return Ok();
+            await _employeeRepository.DeleteEmployeeAsync(id);
+            return NoContent();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Employee>> GetEmployeeByIdAsync(int id)
+        public async Task<ActionResult<Employee>> GetEmployeeById(int id)
         {
             var employee = await _employeeRepository.GetByIdAsync(id);
 
@@ -51,18 +44,22 @@ namespace EmployeeManagement.Controllers
             return Ok(employee);
         }
 
-        [HttpPost("{employee}")]
-        public async Task<ActionResult<Employee>> UpdateEmployeeAsync(Employee employee)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Employee>> UpdateEmployee(int id, Employee employee)
         {
+            if (id != employee.Id)
+            {
+                return BadRequest();
+            }
             await _employeeRepository.UpdateEmployeeAsync(employee);
-            return Ok();
+            return CreatedAtAction(nameof(GetEmployeeById), new { id = employee.Id }, employee);
         }
-        
+
         [HttpPost]
         public async Task<ActionResult<Employee>> CreateEmployee(Employee employee)
         {
             await _employeeRepository.AddEmployeeAsync(employee);
-            return CreatedAtAction(nameof(GetEmployeeByIdAsync), new {id = employee.Id}, employee);
+            return CreatedAtAction(nameof(GetEmployeeById), new {id = employee.Id}, employee);
         }
     }
 }
